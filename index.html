@@ -68,8 +68,9 @@
 <style>
     body {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: auto;
+    zoom: 75%;
     }
 
     table {
@@ -86,12 +87,14 @@
 
     progress {
         border-width: 1px;
-        border-color: #646464;
+        /* border-color: #646464; */
+        outline: none;
         border-radius: 3px; 
         width: 100px;
         height: 20px;
         box-shadow: 1px 1px 4px rgba(128, 128, 128, 0.2);
         margin-left: 5px;
+        background-color: rgb(216, 216, 216);
         }
         progress::-webkit-progress-bar {
         background-color: rgb(216, 216, 216);
@@ -101,10 +104,15 @@
         background-color: rgb(155, 224, 207);
         border-radius: 3px;
         }
+        progress::-moz-progress-bar {
+            background-color: rgb(155, 224, 207);
+            border-radius: 3px;
+        }
 
     progress.long {
         border-width: 1px;
-        border-color: #646464;
+        outline: none;
+        /* border-color: #646464; */
         border-radius: 3px; 
         width: 200px;
         height: 20px;
@@ -125,6 +133,7 @@
         position:absolute;
         left:0;
         right:0;
+        top:1px;
     }
     .progress {
         text-align:center;
