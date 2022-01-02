@@ -1,11 +1,11 @@
 # Slurm web server
-Host a resource monitoring website for slurm system.
+Host a website-based resource monitor for slurm system.
 
-### Required packages
+### Required python packages
 `flask, colored, humanize, humanfriendly, beartype, seaborn`
 
 ### Launch
 run the command: `python app.py --host localhost --port 8080`
 
 ### Reference
-With some supports from [slurm_gpustat](https://github.com/albanie/slurm_gpustat)
+With some supports from [slurm_gpustat](https://github.com/albanie/slurm_gpustat).
