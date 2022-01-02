@@ -1,6 +1,9 @@
 # Slurm web server
 Host a website-based resource monitor for slurm system.
 
+<img src="slurm_web_example.png"
+     style="float: left; margin-right: 10px;" />
+
 ### Required python packages
 `flask, colored, humanize, humanfriendly, beartype, seaborn`
 
