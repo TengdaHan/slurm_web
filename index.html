@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Triton-Monitor</title>
+</head>
+
+<header>
+    <h1>VGG Triton Monitor</h1>
+    <h3><div id="clock"></div></h3>
+    <hr>
+</header>
+
+<body>
+<h2> Resource available:</h2>
+<div id="resource"> </div>
+<br>
+
+<hr>
+<h2> Waiting Queue:</h2>
+<pre class='terminal' id="queue"> </pre>
+
+<br><br><br>
+</body>
+
+<footer>
+    <hr>
+    <p>Ref: VGG Triton info page 
+        (<a href="https://www.robots.ox.ac.uk/~vgg/internal/wiki/doku.php/triton"
+        >https://www.robots.ox.ac.uk/~vgg/internal/wiki/doku.php/triton</a>)</p>
+    <p>With support from slurm_gpustat (<a href="https://github.com/albanie/slurm_gpustat"
+        >https://github.com/albanie/slurm_gpustat</a>) </p>
+    <p>Contact: Tengda Han (htd@robots.ox.ac.uk) </p>
+</footer>
+
+</html>
+
+<!-- Update content every {interval} ms -->
+<script>
+    var interval = 1000 * 1;
+    var clock = document.getElementById("clock");
+    setInterval(() => {
+        fetch("{{ url_for('time_feed') }}")
+        .then(response => {
+                response.text().then(t => {clock.innerHTML = t})
+            });
+        }, interval);
+
+    var resource = document.getElementById("resource");
+    setInterval(() => {
+        fetch("{{ url_for('resource') }}")
+        .then(response => {
+                response.text().then(t => {resource.innerHTML = t})
+            });
+        }, interval);
+
+    var queue = document.getElementById("queue");
+    setInterval(() => {
+        fetch("{{ url_for('queue') }}")
+        .then(response => {
+                response.text().then(t => {queue.innerHTML = t})
+            });
+        }, interval);
+</script>
+
+<!-- CSS -->
+<style>
+    body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    max-width: 1400px;
+    margin: auto;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {background-color: #f5f5f5;}
+
+    progress {
+        border-width: 1px;
+        border-color: #646464;
+        border-radius: 3px; 
+        width: 100px;
+        height: 20px;
+        box-shadow: 1px 1px 4px rgba(128, 128, 128, 0.2);
+        margin-left: 5px;
+        }
+        progress::-webkit-progress-bar {
+        background-color: rgb(216, 216, 216);
+        border-radius: 3px;
+        }
+        progress::-webkit-progress-value {
+        background-color: rgb(155, 224, 207);
+        border-radius: 3px;
+        }
+
+    progress.long {
+        border-width: 1px;
+        border-color: #646464;
+        border-radius: 3px; 
+        width: 200px;
+        height: 20px;
+        box-shadow: 1px 1px 4px rgba(128, 128, 128, 0.2);
+        margin-left: 5px;
+        }
+        progress::-webkit-progress-bar {
+        background-color: rgb(216, 216, 216);
+        border-radius: 3px;
+        }
+        progress::-webkit-progress-value {
+        background-color: rgb(155, 224, 207);
+        border-radius: 3px;
+        }
+
+    .progress:before {
+        content:attr(data-text);
+        position:absolute;
+        left:0;
+        right:0;
+    }
+    .progress {
+        text-align:center;
+        display:inline-block;
+        position:relative;
+    }
+
+    pre {
+        font-size: large;
+        background-color: #f5f5f5;
+    }
+
+    footer {
+        text-align: right;
+    }
+</style>
