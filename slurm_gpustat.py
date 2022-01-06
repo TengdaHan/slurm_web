@@ -29,6 +29,7 @@ import seaborn as sns
 import humanize
 import humanfriendly as hf
 from beartype import beartype
+from django.utils.functional import lazy
 
 
 # SLURM states which indicate that the node is not available for submitting jobs
@@ -416,7 +417,31 @@ def occupancy_stats_for_node(node: str) -> dict:
     return occupancy
 
 
-@functools.lru_cache(maxsize=64, typed=True)
+def lru_cache_time(seconds, maxsize=None):
+    """
+    Adds time aware caching to lru_cache.
+
+    https://stackoverflow.com/questions/31771286/python-in-memory-cache-with-time-to-live
+    """
+    def wrapper(func):
+        # Lazy function that makes sure the lru_cache() invalidate after X secs
+        ttl_hash = lazy(lambda: round(time.time() / seconds), int)()
+        
+        @functools.lru_cache(maxsize)
+        def time_aware(__ttl, *args, **kwargs):
+            """
+            Main wrapper, note that the first argument ttl is not passed down. 
+            This is because no function should bother to know this that 
+            this is here.
+            """
+            def wrapping(*args, **kwargs):
+                return func(*args, **kwargs)
+            return wrapping(*args, **kwargs)
+        return functools.update_wrapper(functools.partial(time_aware, ttl_hash), func)
+    return wrapper
+
+
+@lru_cache_time(seconds=10)
 def avail_stats_for_node(node: str) -> dict:
     """Query SLURM for the availability of a given node.
 

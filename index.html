@@ -38,8 +38,12 @@
 
 <!-- Update content every {interval} ms -->
 <script>
-    var interval = 1000 * 1;
+    var interval = 1000 * 5;
     var clock = document.getElementById("clock");
+    fetch("{{ url_for('time_feed') }}")
+        .then(response => {
+                response.text().then(t => {clock.innerHTML = t})
+            });
     setInterval(() => {
         fetch("{{ url_for('time_feed') }}")
         .then(response => {
@@ -48,6 +52,10 @@
         }, interval);
 
     var resource = document.getElementById("resource");
+    fetch("{{ url_for('resource') }}")
+        .then(response => {
+                response.text().then(t => {resource.innerHTML = t})
+            });
     setInterval(() => {
         fetch("{{ url_for('resource') }}")
         .then(response => {
@@ -56,6 +64,10 @@
         }, interval);
 
     var queue = document.getElementById("queue");
+    fetch("{{ url_for('queue') }}")
+        .then(response => {
+                response.text().then(t => {queue.innerHTML = t})
+            });
     setInterval(() => {
         fetch("{{ url_for('queue') }}")
         .then(response => {

@@ -7,7 +7,7 @@ Host a website-based resource monitor for slurm system.
      style="float: left; margin-right: 10px;" />
 
 ### Required python packages
-`flask, colored, humanize, humanfriendly, beartype, seaborn`
+`flask, colored, humanize, humanfriendly, beartype, seaborn, django`
 
 ### Launch
 run the command: `python app.py --host localhost --port 8080`
