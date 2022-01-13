@@ -8,7 +8,8 @@ from slurm_gpustat import resource_by_type, parse_all_gpus, gpu_usage, \
 
 # from https://developer.nvidia.com/cuda-gpus
 # sort gpu by computing power
-CAPABILITY = {'a100': 8.0, 'a40': 8.6, 'v100': 7.0, 'gv100gl': 7.0,
+CAPABILITY = {'a100': 8.0, 'a40': 8.6, 'a30': 8.0, 'a10': 8.6, 'a16': 8.6,
+              'v100': 7.0, 'gv100gl': 7.0,
               'p40': 6.1, 'm40': 5.2,
               'rtx6k': 7.5, 'rtx8k': 7.5}
 
