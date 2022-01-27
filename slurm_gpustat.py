@@ -463,7 +463,7 @@ def avail_stats_for_node(node: str) -> dict:
                 if tokens == [""]:
                     # SLURM sometimes omits information, so we alert the user to its
                     # its exclusion and report nothing for this node
-                    print(f"Missing information for {node}: {key}, skipping....")
+                    # print(f"Missing information for {node}: {key}, skipping....")
                     metrics[key] = {}
                 else:
                     metrics[key] = {x.split("=")[0]: x.split("=")[1] for x in tokens}

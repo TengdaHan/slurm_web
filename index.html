@@ -18,6 +18,11 @@
 <br>
 
 <hr>
+<h2> Leaderboard:</h2>
+<pre class='terminal' id="leaderboard"> </pre>
+<br>
+
+<hr>
 <h2> Waiting Queue:</h2>
 <pre class='terminal' id="queue"> </pre>
 
@@ -74,6 +79,19 @@
                 response.text().then(t => {queue.innerHTML = t})
             });
         }, interval);
+    
+    var leaderboard = document.getElementById("leaderboard");
+    fetch("{{ url_for('leaderboard') }}")
+        .then(response => {
+                response.text().then(t => {leaderboard.innerHTML = t})
+            });
+    setInterval(() => {
+        fetch("{{ url_for('leaderboard') }}")
+        .then(response => {
+                response.text().then(t => {leaderboard.innerHTML = t})
+            });
+        }, interval);
+
 </script>
 
 <!-- CSS -->
