@@ -13,11 +13,6 @@ CAPABILITY = {'a100': 8.0, 'a40': 8.6, 'a30': 8.0, 'a10': 8.6, 'a16': 8.6,
               'p40': 6.1, 'm40': 5.2,
               'rtx6k': 7.5, 'rtx8k': 7.5}
 
-def get_capability(gpu):
-    if gpu in CAPABILITY:
-        return CAPABILITY[gpu]
-    else:
-        return 0.0
 
 def get_resource_bar(avail, total, text='', long=False):
     """Create a long/short progress bar with text overlaid. Formatting handled in css."""
@@ -38,7 +33,7 @@ def str_to_int(text):
 
 
 def parse_leaderboard():
-    """Request sinfo, parse the leaderboard."""
+    """Request sinfo, parse the leaderboard in string."""
 
     resources = parse_all_gpus()
     usage = gpu_usage(resources=resources, partition='gpu')
@@ -47,15 +42,18 @@ def parse_leaderboard():
         aggregates[user] = {}
         aggregates[user]['n_gpu'] = {key: sum([x['n_gpu'] for x in val.values()])
                                      for key, val in subdict.items()}
+        aggregates[user]['bash_gpu'] = {key: sum([x['bash_gpu'] for x in val.values()])
+                                        for key, val in subdict.items()}
     out = ""
     for user, subdict in sorted(aggregates.items(),
                                 key=lambda x: sum(x[1]['n_gpu'].values()), reverse=True):
         total = f"total={str(sum(subdict['n_gpu'].values())):2s}"
+        total += f"|bash={str(sum(subdict['bash_gpu'].values())):2s}"
         user_summary = [f"{key}={val}" for key, val in sorted(subdict['n_gpu'].items(), 
-                                                               key=lambda x: get_capability(x[0]), 
+                                                               key=lambda x: CAPABILITY.get(x[0], 10.0), 
                                                                reverse=True)]
         summary_str = ''.join([f'{i:12s}' for i in user_summary])
-        out += f"{user:10s}[{total}]    {summary_str}\n"
+        out += f"{user:12s}[{total}]    {summary_str}\n"
     return out
 
 
@@ -160,6 +158,7 @@ def parse_usage_to_table(show_bar=True):
 
 def parse_queue_to_table():
     """Request pending queue, keep the raw formatting."""
+    
     out = parse_cmd('squeue -t PENDING')
     out = '\n'.join(out)
     return out
