@@ -2,10 +2,11 @@ import os
 from datetime import datetime
 import argparse
 import copy
+from subprocess import STDOUT, check_output
 from flask import Flask, Response, render_template_string
 from slurm_gpustat import resource_by_type, parse_all_gpus, gpu_usage, \
     node_states, INACCESSIBLE, parse_cmd, avail_stats_for_node
-from subprocess import STDOUT, check_output
+
 
 # from https://developer.nvidia.com/cuda-gpus
 # sort gpu by computing power
@@ -166,7 +167,10 @@ def parse_queue_to_table():
 
 
 def parse_disk_io():
-    """Measure disk reading/writing speed, keep the raw formatting."""
+    """Measure disk reading speed, parse the output to a html table.
+    
+    Pre-requisite: create a byte file by running 
+    `dd if=/dev/zero of=/your/path/test.img bs=512MB count=1 oflag=dsync`."""
 
     beegfs_fast_read = check_output(
         'dd if=/scratch/shared/beegfs/htd/DATA/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
@@ -188,6 +192,7 @@ def parse_disk_io():
     table_html = f"<table>{summary}</table>"
 
     return table_html
+
 
 def main():
     parser = argparse.ArgumentParser(description="launch web app")
