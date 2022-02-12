@@ -13,6 +13,13 @@
 </header>
 
 <body>
+
+<h2> Disk I/O:</h2>
+<!-- <pre class="terminal" id='disk_io'> </pre> -->
+<div class='table_big' id='disk_io'> </div>
+<br>
+
+<hr>
 <h2> Resource available:</h2>
 <div id="resource"> </div>
 <br>
@@ -55,6 +62,18 @@
                 response.text().then(t => {clock.innerHTML = t})
             });
         }, interval);
+
+    var disk_io = document.getElementById("disk_io");
+    fetch("{{ url_for('disk_io') }}")
+        .then(response => {
+                response.text().then(t => {disk_io.innerHTML = t})
+            });
+    setInterval(() => {
+        fetch("{{ url_for('disk_io') }}")
+        .then(response => {
+                response.text().then(t => {disk_io.innerHTML = t})
+            });
+        }, 1000 * 60 * 15);
 
     var resource = document.getElementById("resource");
     fetch("{{ url_for('resource') }}")
@@ -106,6 +125,12 @@
     table {
         border-collapse: collapse;
         width: 100%;
+    }
+
+    .table_big table {
+        border-collapse: collapse;
+        width: 50%;
+        font-size: 18px;
     }
 
     th, td {

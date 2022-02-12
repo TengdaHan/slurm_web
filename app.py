@@ -5,6 +5,7 @@ import copy
 from flask import Flask, Response, render_template_string
 from slurm_gpustat import resource_by_type, parse_all_gpus, gpu_usage, \
     node_states, INACCESSIBLE, parse_cmd, avail_stats_for_node
+from subprocess import STDOUT, check_output
 
 # from https://developer.nvidia.com/cuda-gpus
 # sort gpu by computing power
@@ -164,6 +165,30 @@ def parse_queue_to_table():
     return out
 
 
+def parse_disk_io():
+    """Measure disk reading/writing speed, keep the raw formatting."""
+
+    beegfs_fast_read = check_output(
+        'dd if=/scratch/shared/beegfs/htd/DATA/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
+        stderr=STDOUT, shell=True).decode("utf-8") 
+    beegfs_fast_read = beegfs_fast_read.split('\n')[-2].split(',')[-1].strip()
+    beegfs_normal_read = check_output(
+        'dd if=/scratch/shared/beegfs/htd/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
+        stderr=STDOUT, shell=True).decode("utf-8") 
+    beegfs_normal_read = beegfs_normal_read.split('\n')[-2].split(',')[-1].strip()
+    work_normal_read = check_output(
+        'dd if=/work/htd/Desktop_tmp/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
+        stderr=STDOUT, shell=True).decode("utf-8") 
+    work_normal_read = work_normal_read.split('\n')[-2].split(',')[-1].strip()
+
+    summary = '<tr><td><b>Disk</b></td><td><b>Read Speed</b></td></tr>'
+    summary += f'<tr><td>\\beegfs flash-layer</td><td>{beegfs_fast_read}</td></tr>'
+    summary += f'<tr><td>\\beegfs normal-layer</td><td>{beegfs_normal_read}</td></tr>'
+    summary += f'<tr><td>\\work</td><td>{work_normal_read}</td></tr>'
+    table_html = f"<table>{summary}</table>"
+
+    return table_html
+
 def main():
     parser = argparse.ArgumentParser(description="launch web app")
     parser.add_argument("--host", default='triton.robots.ox.ac.uk',
@@ -202,6 +227,13 @@ def main():
     def leaderboard():
         def generate():
             out = parse_leaderboard()
+            yield out
+        return Response(generate(), mimetype='text')
+
+    @app.route('/disk_io')
+    def disk_io():
+        def generate():
+            out = parse_disk_io()
             yield out
         return Response(generate(), mimetype='text')
 
