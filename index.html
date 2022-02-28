@@ -24,8 +24,13 @@
 <div id="resource"> </div>
 <br>
 
+<!-- <hr>
+<h2> CPUs available:</h2>
+<div id="cpu_resource"> </div>
+<br> -->
+
 <hr>
-<h2> Leaderboard:</h2>
+<h2> GPU Leaderboard:</h2>
 <pre class='terminal' id="leaderboard"> </pre>
 <br>
 
@@ -50,7 +55,7 @@
 
 <!-- Update content every {interval} ms -->
 <script>
-    var interval = 1000 * 5;
+    var interval = 1000 * 10;
     var clock = document.getElementById("clock");
     fetch("{{ url_for('time_feed') }}")
         .then(response => {
