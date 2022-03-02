@@ -311,23 +311,31 @@ def parse_disk_io():
     Pre-requisite: create a byte file by running 
     `dd if=/dev/zero of=/your/path/test.img bs=512MB count=1 oflag=dsync`."""
 
+    beegfs_ultra_read = check_output(
+    	'dd if=/scratch/shared/beegfs/shared-datasets/test/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
+        stderr=STDOUT, shell=True).decode("utf-8")
+    beegfs_ultra_read = beegfs_ultra_read.split('\n')[-2].split(',')[-1].strip()
+    
     beegfs_fast_read = check_output(
         'dd if=/scratch/shared/beegfs/htd/DATA/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
         stderr=STDOUT, shell=True).decode("utf-8") 
     beegfs_fast_read = beegfs_fast_read.split('\n')[-2].split(',')[-1].strip()
+    
     beegfs_normal_read = check_output(
         'dd if=/scratch/shared/beegfs/htd/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
         stderr=STDOUT, shell=True).decode("utf-8") 
     beegfs_normal_read = beegfs_normal_read.split('\n')[-2].split(',')[-1].strip()
+    
     work_normal_read = check_output(
         'dd if=/work/htd/Desktop_tmp/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
         stderr=STDOUT, shell=True).decode("utf-8") 
     work_normal_read = work_normal_read.split('\n')[-2].split(',')[-1].strip()
 
     summary = '<tr><td><b>Disk</b></td><td><b>Read Speed</b></td></tr>'
-    summary += f'<tr><td>\\beegfs flash-layer</td><td>{beegfs_fast_read}</td></tr>'
-    summary += f'<tr><td>\\beegfs normal-layer</td><td>{beegfs_normal_read}</td></tr>'
-    summary += f'<tr><td>\\work</td><td>{work_normal_read}</td></tr>'
+    summary += f'<tr><td>/beegfs/shared-datasets <i>[ultra-fast-layer]</i></td><td>{beegfs_ultra_read}</td></tr>'
+    summary += f'<tr><td>/beegfs <i>[fast-layer]</i></td><td>{beegfs_fast_read}</td></tr>'
+    summary += f'<tr><td>/beegfs <i>[normal-layer]</i></td><td>{beegfs_normal_read}</td></tr>'
+    summary += f'<tr><td>/work</td><td>{work_normal_read}</td></tr>'
     table_html = f"<table>{summary}</table>"
 
     return table_html
