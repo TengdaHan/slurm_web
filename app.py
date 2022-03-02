@@ -11,6 +11,7 @@ from slurm_gpustat import resource_by_type, parse_all_gpus, gpu_usage, \
 
 # from https://developer.nvidia.com/cuda-gpus
 # sort gpu by computing power
+# if fail to display other GPU types, add items in the following dictionaries.
 CAPABILITY = {'a100': 8.0, 'a40': 8.6, 'a30': 8.0, 'a10': 8.6, 'a16': 8.6,
               'v100': 7.0, 'gv100gl': 7.0,
               'p40': 6.1, 'm40': 5.2,
@@ -331,11 +332,16 @@ def parse_disk_io():
         stderr=STDOUT, shell=True).decode("utf-8") 
     work_normal_read = work_normal_read.split('\n')[-2].split(',')[-1].strip()
 
-    summary = '<tr><td><b>Disk</b></td><td><b>Read Speed</b></td></tr>'
-    summary += f'<tr><td>/beegfs/shared-datasets <i>[ultra-fast-layer]</i></td><td>{beegfs_ultra_read}</td></tr>'
-    summary += f'<tr><td>/beegfs <i>[fast-layer]</i></td><td>{beegfs_fast_read}</td></tr>'
-    summary += f'<tr><td>/beegfs <i>[normal-layer]</i></td><td>{beegfs_normal_read}</td></tr>'
-    summary += f'<tr><td>/work</td><td>{work_normal_read}</td></tr>'
+    summary = '<tr> <td><b>{}</b></td> <td><b>{}</b></td> <td><b>{}</b></td> </tr>'.format(
+        'Disk', 'Type', 'Read Speed')
+    summary += '<tr> <td>{}</td> <td>{}</td> <td>{}</td> </tr>'.format(
+        '/beegfs/shared-datasets <i>[ultra-fast-layer]</i>', 'NVMe flash', beegfs_ultra_read)
+    summary += '<tr> <td>{}</td> <td>{}</td> <td>{}</td> </tr>'.format(
+        '/beegfs <i>[fast-layer]</i>', 'SSD flash', beegfs_fast_read)
+    summary += '<tr> <td>{}</td> <td>{}</td> <td>{}</td> </tr>'.format(
+        '/beegfs <i>[normal-layer]</i>', 'HDD', beegfs_normal_read)
+    summary += '<tr> <td>{}</td> <td>{}</td> <td>{}</td></tr>'.format(
+        '/work', 'HDD', work_normal_read)
     table_html = f"<table>{summary}</table>"
 
     return table_html
