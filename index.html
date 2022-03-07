@@ -13,12 +13,16 @@
     <button style="float: right;" onclick="myFunction()">Toggle Dark Mode</button>
      
     <script>
+        var dark_mode_enabled = false;
+
         function darkModeChildren(element) {
             for (var i = 0; i < element.length; i++) {
-                if (element[i].style.backgroundColor != "black" && element[i].className != "progress") {
+                // if (element[i].style.backgroundColor != "black" && element[i].className != "progress") {
+                if (dark_mode_enabled && element[i].className != "progress"){
                     element[i].style.backgroundColor = "black";
                     element[i].style.color = "white";
                 }
+
                 else{
                     element[i].style.backgroundColor = "#e6e6e6";
                     element[i].style.color = "black";
@@ -31,7 +35,11 @@
         function myFunction() {
             var element = document.body;
             element.classList.toggle("dark");
+            dark_mode_enabled = !dark_mode_enabled;
+            darkMode();
 
+        }
+        function darkMode() {
             var tables = ["resource","table_big", "terminal","disk_io"];
 
             for (var i = 0; i < tables.length; i++) {
@@ -94,64 +102,63 @@
 
 <!-- Update content every {interval} ms -->
 <script>
-    var interval = 1000 * 1000000;
+
+    var interval = 1000 * 10;
     var clock = document.getElementById("clock");
     fetch("{{ url_for('time_feed') }}")
         .then(response => {
-                response.text().then(t => {clock.innerHTML = t})
+                response.text().then(t => {clock.innerHTML = t;darkMode();})
             });
     setInterval(() => {
         fetch("{{ url_for('time_feed') }}")
         .then(response => {
-                response.text().then(t => {clock.innerHTML = t})
+                response.text().then(t => {clock.innerHTML = t;darkMode();})
             });
         }, interval);
 
     var disk_io = document.getElementById("disk_io");
     fetch("{{ url_for('disk_io') }}")
         .then(response => {
-                response.text().then(t => {disk_io.innerHTML = t})
+                response.text().then(t => {disk_io.innerHTML = t;darkMode();})
             });
     setInterval(() => {
         fetch("{{ url_for('disk_io') }}")
         .then(response => {
-                response.text().then(t => {disk_io.innerHTML = t})
+                response.text().then(t => {disk_io.innerHTML = t;darkMode();})
             });
         }, 1000 * 60 * 15);
 
     var resource = document.getElementById("resource");
     fetch("{{ url_for('resource') }}")
         .then(response => {
-                response.text().then(t => {resource.innerHTML = t})
-            });
+                response.text().then(t => {resource.innerHTML = t;darkMode();})});
     setInterval(() => {
         fetch("{{ url_for('resource') }}")
         .then(response => {
-                response.text().then(t => {resource.innerHTML = t})
-            });
+                response.text().then(t => {resource.innerHTML = t;darkMode();})});
         }, interval);
 
     var queue = document.getElementById("queue");
     fetch("{{ url_for('queue') }}")
         .then(response => {
-                response.text().then(t => {queue.innerHTML = t})
+                response.text().then(t => {queue.innerHTML = t;darkMode();})
             });
     setInterval(() => {
         fetch("{{ url_for('queue') }}")
         .then(response => {
-                response.text().then(t => {queue.innerHTML = t})
+                response.text().then(t => {queue.innerHTML = t;darkMode();})
             });
         }, interval);
     
     var leaderboard = document.getElementById("leaderboard");
     fetch("{{ url_for('leaderboard') }}")
         .then(response => {
-                response.text().then(t => {leaderboard.innerHTML = t})
+                response.text().then(t => {leaderboard.innerHTML = t;darkMode();})
             });
     setInterval(() => {
         fetch("{{ url_for('leaderboard') }}")
         .then(response => {
-                response.text().then(t => {leaderboard.innerHTML = t})
+                response.text().then(t => {leaderboard.innerHTML = t;darkMode();})
             });
         }, interval);
 
