@@ -13,12 +13,20 @@
     <button style="float: right;" onclick="myFunction()">Toggle Dark Mode</button>
      
     <script>
+        var dark_mode_enabled = localStorage.getItem('colorScheme');
+        console.log(dark_mode_enabled);
+        if (dark_mode_enabled == null){
+            dark_mode_enabled = false;
+            localStorage.setItem('colorScheme', dark_mode_enabled);
+        }
         function darkModeChildren(element) {
             for (var i = 0; i < element.length; i++) {
-                if (element[i].style.backgroundColor != "black" && element[i].className != "progress") {
+                // if (element[i].style.backgroundColor != "black" && element[i].className != "progress") {
+                if (dark_mode_enabled === "true" && element[i].className != "progress"){
                     element[i].style.backgroundColor = "black";
                     element[i].style.color = "white";
                 }
+
                 else{
                     element[i].style.backgroundColor = "#e6e6e6";
                     element[i].style.color = "black";
@@ -28,10 +36,32 @@
 
         }
 
+        function checkColour(){
+            console.log(dark_mode_enabled);
+            if (dark_mode_enabled ==="true"){
+                var element = document.body;
+                element.classList.toggle("dark");
+                darkMode();
+            }
+        }
+
         function myFunction() {
             var element = document.body;
             element.classList.toggle("dark");
+            
+            if (dark_mode_enabled ==="true"){
+                dark_mode_enabled = "false";
+                localStorage.setItem('colorScheme', false);
+            }
+            else{
+                dark_mode_enabled = "true";
+                localStorage.setItem('colorScheme', true);
+            }
 
+            darkMode();
+
+        }
+        function darkMode() {
             var tables = ["resource","table_big", "terminal","disk_io"];
 
             for (var i = 0; i < tables.length; i++) {
@@ -51,7 +81,7 @@
     <hr>
 </header>
 
-<body>
+<body onload="checkColour()">
 
 <h2> Disk I/O:</h2>
 <!-- <pre class="terminal" id='disk_io'> </pre> -->
@@ -94,64 +124,63 @@
 
 <!-- Update content every {interval} ms -->
 <script>
+
     var interval = 1000 * 10;
     var clock = document.getElementById("clock");
     fetch("{{ url_for('time_feed') }}")
         .then(response => {
-                response.text().then(t => {clock.innerHTML = t})
+                response.text().then(t => {clock.innerHTML = t;darkMode();})
             });
     setInterval(() => {
         fetch("{{ url_for('time_feed') }}")
         .then(response => {
-                response.text().then(t => {clock.innerHTML = t})
+                response.text().then(t => {clock.innerHTML = t;darkMode();})
             });
         }, interval);
 
     var disk_io = document.getElementById("disk_io");
     fetch("{{ url_for('disk_io') }}")
         .then(response => {
-                response.text().then(t => {disk_io.innerHTML = t})
+                response.text().then(t => {disk_io.innerHTML = t;darkMode();})
             });
     setInterval(() => {
         fetch("{{ url_for('disk_io') }}")
         .then(response => {
-                response.text().then(t => {disk_io.innerHTML = t})
+                response.text().then(t => {disk_io.innerHTML = t;darkMode();})
             });
         }, 1000 * 60 * 15);
 
     var resource = document.getElementById("resource");
     fetch("{{ url_for('resource') }}")
         .then(response => {
-                response.text().then(t => {resource.innerHTML = t})
-            });
+                response.text().then(t => {resource.innerHTML = t;darkMode();})});
     setInterval(() => {
         fetch("{{ url_for('resource') }}")
         .then(response => {
-                response.text().then(t => {resource.innerHTML = t})
-            });
+                response.text().then(t => {resource.innerHTML = t;darkMode();})});
         }, interval);
 
     var queue = document.getElementById("queue");
     fetch("{{ url_for('queue') }}")
         .then(response => {
-                response.text().then(t => {queue.innerHTML = t})
+                response.text().then(t => {queue.innerHTML = t;darkMode();})
             });
     setInterval(() => {
         fetch("{{ url_for('queue') }}")
         .then(response => {
-                response.text().then(t => {queue.innerHTML = t})
+                response.text().then(t => {queue.innerHTML = t;darkMode();})
             });
         }, interval);
     
     var leaderboard = document.getElementById("leaderboard");
     fetch("{{ url_for('leaderboard') }}")
         .then(response => {
-                response.text().then(t => {leaderboard.innerHTML = t})
+                response.text().then(t => {leaderboard.innerHTML = t;darkMode();})
             });
     setInterval(() => {
         fetch("{{ url_for('leaderboard') }}")
         .then(response => {
-                response.text().then(t => {leaderboard.innerHTML = t})
+                response.text().then(t => {leaderboard.innerHTML = t;darkMode();})
             });
         }, interval);
 
