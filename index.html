@@ -10,7 +10,7 @@
     </script>
 <header>
     <h1>VGG Triton Monitor</h1>
-    <button style="float: right;" onclick="myFunction()">Toggle Dark Mode</button>
+    <button style="float: right;" onclick="ToggleDarkFn()">Toggle Dark Mode</button>
      
     <script>
         var dark_mode_enabled = localStorage.getItem('colorScheme');
@@ -21,19 +21,28 @@
         }
         function darkModeChildren(element) {
             for (var i = 0; i < element.length; i++) {
-                // if (element[i].style.backgroundColor != "black" && element[i].className != "progress") {
-                if (dark_mode_enabled === "true" && element[i].className != "progress"){
-                    element[i].style.backgroundColor = "black";
-                    element[i].style.color = "white";
+                if (dark_mode_enabled === "true"){
+                    if (element[i].className == "progress"){
+                        element[i].style.backgroundColor = "transparent";
+                        element[i].style.color = "black";
+                    }
+                    else {
+                        element[i].style.backgroundColor = "black";
+                        element[i].style.color = "white";
+                    }
                 }
 
-                else{
-                    element[i].style.backgroundColor = "#e6e6e6";
-                    element[i].style.color = "black";
+                else {
+                    if (element[i].className == "progress"){
+                        element[i].style.backgroundColor = "transparent";
+                        element[i].style.color = "black";
+                    }
+                    else {
+                        element[i].style.backgroundColor = "#e6e6e6";
+                        element[i].style.color = "black";
+                    }
                 }
-
             }
-
         }
 
         function checkColour(){
@@ -45,7 +54,7 @@
             }
         }
 
-        function myFunction() {
+        function ToggleDarkFn() {
             var element = document.body;
             element.classList.toggle("dark");
             
@@ -83,8 +92,7 @@
 
 <body onload="checkColour()">
 
-<h2> Disk I/O:</h2>
-<!-- <pre class="terminal" id='disk_io'> </pre> -->
+<h2> Disk I/O (not accurate):</h2>
 <div class='table_big' id='disk_io'> </div>
 <br>
 
@@ -200,10 +208,7 @@
     pre.terminal {
         color: #222;
         background-color: #fafafa;
-
     }
-
-
 
     table {
         border-collapse: collapse;
