@@ -38,7 +38,7 @@
                         element[i].style.color = "black";
                     }
                     else {
-                        element[i].style.backgroundColor = "#e6e6e6";
+                        element[i].style.backgroundColor = "#f5f5f5";
                         element[i].style.color = "black";
                     }
                 }
@@ -133,7 +133,7 @@
 <!-- Update content every {interval} ms -->
 <script>
 
-    var interval = 1000 * 10;
+    var interval = 1000 * 10000;
     var clock = document.getElementById("clock");
     fetch("{{ url_for('time_feed') }}")
         .then(response => {
