@@ -312,25 +312,37 @@ def parse_disk_io():
     Pre-requisite: create a byte file by running 
     `dd if=/dev/zero of=/your/path/test.img bs=512MB count=1 oflag=dsync`."""
 
-    beegfs_ultra_read = check_output(
-    	'dd if=/scratch/shared/beegfs/shared-datasets/test/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
-        stderr=STDOUT, shell=True).decode("utf-8")
-    beegfs_ultra_read = beegfs_ultra_read.split('\n')[-2].split(',')[-1].strip()
-    
-    beegfs_fast_read = check_output(
-        'dd if=/scratch/shared/beegfs/htd/DATA/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
-        stderr=STDOUT, shell=True).decode("utf-8") 
-    beegfs_fast_read = beegfs_fast_read.split('\n')[-2].split(',')[-1].strip()
-    
-    beegfs_normal_read = check_output(
-        'dd if=/scratch/shared/beegfs/htd/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
-        stderr=STDOUT, shell=True).decode("utf-8") 
-    beegfs_normal_read = beegfs_normal_read.split('\n')[-2].split(',')[-1].strip()
-    
-    work_normal_read = check_output(
-        'dd if=/work/htd/Desktop_tmp/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
-        stderr=STDOUT, shell=True).decode("utf-8") 
-    work_normal_read = work_normal_read.split('\n')[-2].split(',')[-1].strip()
+    try:
+        beegfs_ultra_read = check_output(
+            'dd if=/scratch/shared/beegfs/shared-datasets/test/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
+            stderr=STDOUT, shell=True).decode("utf-8")
+        beegfs_ultra_read = beegfs_ultra_read.split('\n')[-2].split(',')[-1].strip()
+    except:
+        beegfs_ultra_read = 'N/A'
+
+    try:
+        beegfs_fast_read = check_output(
+            'dd if=/scratch/shared/beegfs/htd/DATA/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
+            stderr=STDOUT, shell=True).decode("utf-8") 
+        beegfs_fast_read = beegfs_fast_read.split('\n')[-2].split(',')[-1].strip()
+    except:
+        beegfs_fast_read = 'N/A'
+
+    try:
+        beegfs_normal_read = check_output(
+            'dd if=/scratch/shared/beegfs/htd/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
+            stderr=STDOUT, shell=True).decode("utf-8") 
+        beegfs_normal_read = beegfs_normal_read.split('\n')[-2].split(',')[-1].strip()
+    except:
+        beegfs_normal_read = 'N/A'
+
+    try:
+        work_normal_read = check_output(
+            'dd if=/work/htd/Desktop_tmp/tmp/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
+            stderr=STDOUT, shell=True).decode("utf-8") 
+        work_normal_read = work_normal_read.split('\n')[-2].split(',')[-1].strip()
+    except:
+        work_normal_read = 'N/A'
 
     summary = '<tr> <td><b>{}</b></td> <td><b>{}</b></td> <td><b>{}</b></td> </tr>'.format(
         'Disk', 'Type', 'Read Speed')

@@ -133,7 +133,7 @@
 <!-- Update content every {interval} ms -->
 <script>
 
-    var interval = 1000 * 10000;
+    var interval = 1000 * 10;
     var clock = document.getElementById("clock");
     fetch("{{ url_for('time_feed') }}")
         .then(response => {
