@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import argparse
 import copy
+import pytz
 from collections import defaultdict
 from subprocess import STDOUT, check_output
 from flask import Flask, Response, render_template_string
@@ -16,7 +17,7 @@ CAPABILITY = {'a100': 8.0, 'a40': 8.6, 'a30': 8.0, 'a10': 8.6, 'a16': 8.6,
               'v100': 7.0, 'gv100gl': 7.0,
               'p40': 6.1, 'm40': 5.2,
               'rtx6k': 7.5, 'rtx8k': 7.5}
-GMEM = {'a40': '[48g]', 'a30': '[24g]',
+GMEM = {'a6000': '[48g]', 'a40': '[48g]', 'a30': '[24g]',
         'v100': '[16g]', 'gv100gl': '[32g]',
         'p40': '[24g]', 'm40': '[12/24g]',
         'rtx6k': '[24g]', 'rtx8k': '[48g]'}
@@ -376,7 +377,7 @@ def main():
     @app.route('/time_feed')
     def time_feed():
         def generate():
-            yield f'updated at: {datetime.now().strftime("%Y.%m.%d | %H:%M:%S")}'
+            yield f'updated at: {datetime.now(pytz.timezone("Europe/London")).strftime("%Y.%m.%d | %H:%M:%S")}'
         return Response(generate(), mimetype='text')
 
     @app.route('/resource')
