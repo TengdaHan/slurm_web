@@ -21,6 +21,8 @@ GMEM = {'a6000': '[48g]', 'a40': '[48g]', 'a30': '[24g]',
         'v100': '[16g]', 'gv100gl': '[32g]',
         'p40': '[24g]', 'm40': '[12/24g]',
         'rtx6k': '[24g]', 'rtx8k': '[48g]'}
+OLD_GPU_TYPES = ['p40', 'm40']
+
 
 def get_resource_bar(avail, total, text='', long=False):
     """Create a long/short progress bar with text overlaid. Formatting handled in css."""
@@ -61,6 +63,8 @@ def parse_leaderboard():
                                                                key=lambda x: CAPABILITY.get(x[0], 10.0), 
                                                                reverse=True)]
         summary_str = ''.join([f'{i:12s}' for i in user_summary])
+        num_new_gpus = [val for key, val in subdict['n_gpu'].items() if key not in OLD_GPU_TYPES]
+        total += f"|newer={str(sum(num_new_gpus)):2s}"
         out += f"{user:12s}[{total}]    {summary_str}\n"
     return out
 
