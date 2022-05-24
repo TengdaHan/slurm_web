@@ -376,7 +376,7 @@ def main():
 
     @app.route('/')
     def index():
-        return render_template_string(open('index.html').read())
+        return render_template_string(open('index.html').read(), hostname=args.host)
 
     @app.route('/time_feed')
     def time_feed():

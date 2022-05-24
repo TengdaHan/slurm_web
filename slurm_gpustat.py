@@ -603,6 +603,11 @@ def gpu_usage(resources: dict, partition: Optional[str] = None) -> dict:
        resource_flag = "gres"
     else:
        resource_flag = "tres-per-node"
+    if int(slurm_version[0:2]) >= 21:
+        gpu_identifier = 'gres:gpu'
+    else:
+        gpu_identifier = 'gpu'
+
     cmd = f"squeue -O {resource_flag}:100,nodelist:100,username:100,jobid:100 --noheader"
     if partition:
         cmd += f" --partition={partition}"
@@ -612,7 +617,7 @@ def gpu_usage(resources: dict, partition: Optional[str] = None) -> dict:
     for row in rows:
         tokens = row.split()
         # ignore pending jobs
-        if len(tokens) < 4 or not tokens[0].startswith("gpu"):
+        if len(tokens) < 4 or not tokens[0].startswith(gpu_identifier):
             continue
         gpu_count_str, node_str, user, jobid = tokens
         gpu_count_tokens = gpu_count_str.split(":")
@@ -630,7 +635,7 @@ def gpu_usage(resources: dict, partition: Optional[str] = None) -> dict:
             if node_name not in resources:
                 continue
             node_gpu_types = [x["type"] for x in resources[node_name]]
-            if len(gpu_count_tokens) == 2:
+            if (len(gpu_count_tokens) == 2) or (int(slurm_version[0:2]) >= 21):
                 gpu_type = None
             elif len(gpu_count_tokens) == 3:
                 gpu_type = gpu_count_tokens[1]
