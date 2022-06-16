@@ -46,7 +46,7 @@ def parse_leaderboard():
     """Request sinfo, parse the leaderboard in string."""
 
     resources = parse_all_gpus()
-    usage = gpu_usage(resources=resources, partition='gpu')
+    usage = gpu_usage(resources=resources,) # partition='gpu'
     aggregates = {}
     for user, subdict in usage.items():
         aggregates[user] = {}
