@@ -14,11 +14,11 @@ from slurm_gpustat import resource_by_type, parse_all_gpus, gpu_usage, \
 # sort gpu by computing power
 # if fail to display other GPU types, add items in the following dictionaries.
 CAPABILITY = {'a100': 8.0, 'a40': 8.6, 'a30': 8.0, 'a10': 8.6, 'a16': 8.6,
-              'v100': 7.0, 'gv100gl': 7.0,
+              'v100': 7.0, 'gv100gl': 7.0, 'v100s': 7.0,
               'p40': 6.1, 'm40': 5.2,
               'rtx6k': 7.5, 'rtx8k': 7.5}
 GMEM = {'a6000': '[48g]', 'a40': '[48g]', 'a30': '[24g]',
-        'v100': '[16g]', 'gv100gl': '[32g]',
+        'v100': '[16g]', 'gv100gl': '[32g]', 'v100s': '[32g]',
         'p40': '[24g]', 'm40': '[12/24g]',
         'rtx6k': '[24g]', 'rtx8k': '[48g]'}
 OLD_GPU_TYPES = ['p40', 'm40']
@@ -31,6 +31,8 @@ def get_resource_bar(avail, total, text='', long=False):
         long_str = ' class=long'
     else:
         long_str = ''
+    if total == 0:
+        total = 1 # avoid ZeroDivisionError Error
     bar = (f'<div class="progress" data-text="{text}">'
            f'<progress{long_str} max="100" value="{avail/total*100}"></progress></div>')
     return bar
@@ -235,6 +237,7 @@ def parse_usage_to_table(show_bar=True):
                        reverse=True)
 
     # writing the html table
+    num_col = None
     for gpu_type in type_list:
         node_dicts = res_total_by_type[gpu_type]
         node_names = sorted([i['node'] for i in node_dicts])
@@ -297,6 +300,8 @@ def parse_usage_to_table(show_bar=True):
                                     text=f'{avail_gpu_count} / {total_gpu_count}')
     else:
         total_bar = f'{avail_gpu_count}/{total_gpu_count}'
+    if num_col is None:
+        num_col = [6]  # avoid edge case: no GPUs available
     total_summary = (f'<tr><td colspan="{max(num_col)}"><h3>'
                      f'Summary: {total_bar} gpus available</h3></td></tr>')
     table_html = f"<table>{total_summary}{''.join(table_html)}</table>"
