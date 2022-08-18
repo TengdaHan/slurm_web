@@ -8,28 +8,20 @@ A simple website-based resource monitor for slurm system.
 
 ### Required python packages
 
-Run 
+Run `pip install -r requirements.txt` to install the dependencies
 
-`pip install -r requirements.txt`
-
-to install the dependencies
-
-### Launch
+### Launch Web Monitor
 For example, run the command: `python app.py --host localhost --port 8080`.
 Then the website will be hosted at `localhost:8080/`. 
 
 You should change the host and port for your server.
 Also change the [index.html](index.html) for header/footer and formatting.
 
-### Running as a command-line tool
+### Running as a command-line tool (inherited from [slurm_gpustat](https://github.com/albanie/slurm_gpustat))
 
-You can also use slurm_gpustat in the command line by
+* You can also use slurm_gpustat in the command line by `python slurm_web/slurm_gpustat.py`
 
-`python slurm_web/slurm_gpustat.py`
-
-or by adding the following alias to your `.bash_profile`:
-
-`alias slurm_gpustat='python ~/slurm_web/slurm_gpustat.py'`
+* or by adding the following alias to your `.bash_profile`: `alias slurm_gpustat='python ~/slurm_web/slurm_gpustat.py'`
 
 ### Reference
 With some supports from [slurm_gpustat](https://github.com/albanie/slurm_gpustat).
