@@ -559,7 +559,7 @@ def summary_by_type(resources: dict, tag: str):
     agg_str = []
     for key, val in sorted(by_type.items(), key=lambda x: sum(y["count"] for y in x[1])):
         gpu_count = sum(x["count"] for x in val)
-        agg_str.append(f"{gpu_count} {key} GPU's")
+        agg_str.append(f"{gpu_count}: {key}")
     print(f"There are a total of {total} GPU's {tag}")
     print("\n".join(agg_str))
 
@@ -725,7 +725,7 @@ def available(
                 res[node_name][resource_idx]["count"] = count
     by_type = resource_by_type(res)
     total = sum(x["count"] for sublist in by_type.values() for x in sublist)
-    print(f"There are a total of {total} GPU's available:")
+    print(f"There are a total of {total} GPU's available")
     for key, counts_for_gpu_type in by_type.items():
         gpu_count = sum(x["count"] for x in counts_for_gpu_type)
         tail = ""
@@ -740,7 +740,7 @@ def available(
                     details = f"[{', '.join(details)}] [{','.join(users)}]"
                     summary_strs.append(f"\n -> {node}: {count} {key} {details}")
             tail = " ".join(summary_strs)
-        print(f"{key}: {gpu_count} available {tail}")
+        print(f"{key}: {gpu_count} {tail}")
 
 
 @beartype
