@@ -29,6 +29,7 @@ import seaborn as sns
 import humanize
 import humanfriendly as hf
 from beartype import beartype
+from prettytable import PrettyTable, PLAIN_COLUMNS
 from django.utils.functional import lazy
 
 
@@ -36,6 +37,12 @@ from django.utils.functional import lazy
 INACCESSIBLE = {"drain*", "down*", "drng", "drain", "down"}
 INTERACTIVE_CMDS = {"bash", "zsh", "sh"}
 
+# display 'Under {slurm_str} management'
+PRINT_SLURM_STR = False
+# printed between each section of output
+DIVIDER = ""
+# print whether per-user allocated GPU's are interactive or not
+PRINT_INTERACTIVE = False
 
 class Daemon:
     """A Generic linux daemon base class for python 3.x.
@@ -681,12 +688,24 @@ def in_use(resources: dict = None, partition: Optional[str] = None):
         aggregates[user]['bash_gpu'] = {key: sum([x['bash_gpu'] for x in val.values()])
                                         for key, val in subdict.items()}
     print("Usage by user:")
+    pretty_table = PrettyTable()
+    pretty_table.field_names = ["name", "count", "notes"]
+    pretty_table.header = False
+    pretty_table.hrules = False
+    pretty_table.vrules = False
+    pretty_table.border = False
+    pretty_table.align = "l"
     for user, subdict in sorted(aggregates.items(),
                                 key=lambda x: sum(x[1]['n_gpu'].values())):
-        total = (f"total: {str(sum(subdict['n_gpu'].values())):2s} "
-                 f"(interactive: {str(sum(subdict['bash_gpu'].values())):2s})")
+        if PRINT_INTERACTIVE:
+            total = (f"total: {str(sum(subdict['n_gpu'].values())):2s} "
+                     f"(interactive: {str(sum(subdict['bash_gpu'].values())):2s})")
+        else:
+            total = f"{str(sum(subdict['n_gpu'].values())):2s} "
         summary_str = ", ".join([f"{key}: {val}" for key, val in subdict['n_gpu'].items()])
-        print(f"{user:10s} [{total}] {summary_str}")
+        #print(f"{user:10s}\t\t{total}\t{summary_str}")
+        pretty_table.add_row([user, total, summary_str])
+    print(pretty_table)
 
 
 @beartype
@@ -727,7 +746,6 @@ def available(
     total = sum(x["count"] for sublist in by_type.values() for x in sublist)
     print(f"There are a total of {total} GPU's available")
     # sort the by_type dict by count
-    #by_type = {key: val for key, val in sorted(by_type.items(), key = lambda ele: ele[1])}
     by_type = {key: val for key, val in sorted(by_type.items(), key = lambda ele: sum(x["count"] for x in ele[1]))}
     for key, counts_for_gpu_type in by_type.items():
         gpu_count = sum(x["count"] for x in counts_for_gpu_type)
@@ -756,14 +774,15 @@ def all_info(color: int, verbose: bool, partition: Optional[str] = None):
         partition: the partition/queue (or multiple, comma separated) of interest.
             By default None, which queries all available partitions.
     """
-    divider, slurm_str = "---------------------------------", "SLURM"
+    divider, slurm_str = DIVIDER, "SLURM"
     if color:
         colors = sns.color_palette("hls", 8).as_hex()
         divider = colored.stylize(divider, colored.fg(colors[7]))
         slurm_str = colored.stylize(slurm_str, colored.fg(colors[0]))
-    #print(divider)
-    #print(f"Under {slurm_str} management")
     print(divider)
+    if PRINT_SLURM_STR:
+        print(f"Under {slurm_str} management")
+        print(divider)
     resources = parse_all_gpus(partition=partition)
     states = node_states(partition=partition)
     for mode in ("configured", "up"):

@@ -6,5 +6,5 @@ django
 flask
 humanfriendly
 humanize
-
+prettytable
 
