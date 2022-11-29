@@ -560,7 +560,7 @@ def summary_by_type(resources: dict, tag: str):
     for key, val in sorted(by_type.items(), key=lambda x: sum(y["count"] for y in x[1])):
         gpu_count = sum(x["count"] for x in val)
         agg_str.append(f"{gpu_count} {key} gpus")
-    print(f"There are a total of {total} gpus [{tag}]")
+    print(f"There are a total of {total} gpus {tag}")
     print("\n".join(agg_str))
 
 
