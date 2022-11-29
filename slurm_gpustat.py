@@ -36,6 +36,7 @@ from django.utils.functional import lazy
 INACCESSIBLE = {"drain*", "down*", "drng", "drain", "down"}
 INTERACTIVE_CMDS = {"bash", "zsh", "sh"}
 
+DEFAULT_PARTITION_LIST = "cpu,cpu-preempt,cpu-long,gpu,gpu-preempt,gpu-long"
 
 class Daemon:
     """A Generic linux daemon base class for python 3.x.
@@ -354,7 +355,7 @@ def parse_cmd(cmd, split=True):
 
 
 @beartype
-def node_states(partition: Optional[str] = None) -> dict:
+def node_states(partition: Optional[str] = DEFAULT_PARTITION_LIST) -> dict:
     """Query SLURM for the state of each managed node.
 
     Args:
