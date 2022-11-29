@@ -725,7 +725,7 @@ def available(
                 res[node_name][resource_idx]["count"] = count
     by_type = resource_by_type(res)
     total = sum(x["count"] for sublist in by_type.values() for x in sublist)
-    print(f"There are {total} GPU's available:")
+    print(f"There are a total of {total} GPU's available:")
     for key, counts_for_gpu_type in by_type.items():
         gpu_count = sum(x["count"] for x in counts_for_gpu_type)
         tail = ""
@@ -766,9 +766,9 @@ def all_info(color: int, verbose: bool, partition: Optional[str] = None):
     for mode in ("configured", "up"):
         summary(mode=mode, resources=resources, states=states)
         print(divider)
-    in_use(resources, partition=partition)
-    print(divider)
     available(resources=resources, states=states, verbose=verbose)
+    print(divider)
+    in_use(resources, partition=partition)
     print(divider)
 
 def main():
