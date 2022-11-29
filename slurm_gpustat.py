@@ -29,7 +29,7 @@ import seaborn as sns
 import humanize
 import humanfriendly as hf
 from beartype import beartype
-from prettytable import PrettyTable, PLAIN_COLUMNS
+from prettytable import PrettyTable
 from django.utils.functional import lazy
 
 
