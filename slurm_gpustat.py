@@ -569,7 +569,7 @@ def summary(mode: str, resources: dict = None, states: dict = None):
     """Generate a printed summary of the cluster resources.
 
     Args:
-        mode (str): the kind of resources to query (must be one of 'accessible', 'up').
+        mode (str): the kind of resources to query (must be one of 'up', 'configured').
         resources (dict :: None): a summary of cluster resources, organised by node name.
         states (dict[str: str] :: None): a mapping between node names and SLURM states.
     """
@@ -577,10 +577,10 @@ def summary(mode: str, resources: dict = None, states: dict = None):
         resources = parse_all_gpus()
     if not states:
         states = node_states()
-    if mode == "accessible":
+    if mode == "up":
         res = {key: val for key, val in resources.items()
                if states.get(key, "down") not in INACCESSIBLE}
-    elif mode == "up":
+    elif mode == "configured":
         res = resources
     else:
         raise ValueError(f"Unknown mode: {mode}")
@@ -763,7 +763,7 @@ def all_info(color: int, verbose: bool, partition: Optional[str] = None):
     print(divider)
     resources = parse_all_gpus(partition=partition)
     states = node_states(partition=partition)
-    for mode in ("up", "accessible"):
+    for mode in ("configured", "up"):
         summary(mode=mode, resources=resources, states=states)
         print(divider)
     in_use(resources, partition=partition)
