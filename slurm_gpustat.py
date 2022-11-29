@@ -38,11 +38,11 @@ INACCESSIBLE = {"drain*", "down*", "drng", "drain", "down"}
 INTERACTIVE_CMDS = {"bash", "zsh", "sh"}
 
 # display 'Under {slurm_str} management'
-PRINT_SLURM_STR = False
+PRINT_SLURM_STR = True
 # printed between each section of output
-DIVIDER = ""
+DIVIDER = "------------------"
 # print whether per-user allocated GPU's are interactive or not
-PRINT_INTERACTIVE = False
+PRINT_INTERACTIVE = True
 
 class Daemon:
     """A Generic linux daemon base class for python 3.x.
