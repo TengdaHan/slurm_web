@@ -36,7 +36,6 @@ from django.utils.functional import lazy
 INACCESSIBLE = {"drain*", "down*", "drng", "drain", "down"}
 INTERACTIVE_CMDS = {"bash", "zsh", "sh"}
 
-DEFAULT_PARTITION_LIST = "cpu,cpu-preempt,cpu-long,gpu,gpu-preempt,gpu-long"
 
 class Daemon:
     """A Generic linux daemon base class for python 3.x.
@@ -355,7 +354,7 @@ def parse_cmd(cmd, split=True):
 
 
 @beartype
-def node_states(partition: Optional[str] = DEFAULT_PARTITION_LIST) -> dict:
+def node_states(partition: Optional[str] = None) -> dict:
     """Query SLURM for the state of each managed node.
 
     Args:
@@ -727,6 +726,9 @@ def available(
     by_type = resource_by_type(res)
     total = sum(x["count"] for sublist in by_type.values() for x in sublist)
     print(f"There are a total of {total} GPU's available")
+    # sort the by_type dict by count
+    #by_type = {key: val for key, val in sorted(by_type.items(), key = lambda ele: ele[1])}
+    by_type = {key: val for key, val in sorted(by_type.items(), key = lambda ele: sum(x["count"] for x in ele[1]))}
     for key, counts_for_gpu_type in by_type.items():
         gpu_count = sum(x["count"] for x in counts_for_gpu_type)
         tail = ""
@@ -741,7 +743,7 @@ def available(
                     details = f"[{', '.join(details)}] [{','.join(users)}]"
                     summary_strs.append(f"\n -> {node}: {count} {key} {details}")
             tail = " ".join(summary_strs)
-        print(f"{key}: {gpu_count} {tail}")
+        print(f"{gpu_count}: {key} {tail}")
 
 
 @beartype
