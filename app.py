@@ -44,7 +44,7 @@ def str_to_int(text):
     return int(''.join(c for c in text if c.isdigit()))
 
 
-def parse_leaderboard():
+def parse_leaderboard(sum_by_gmem=[48]):
     """Request sinfo, parse the leaderboard in string."""
 
     resources = parse_all_gpus()
@@ -65,6 +65,8 @@ def parse_leaderboard():
                                                                reverse=True)]
         summary_str = ''.join([f'{i:12s}' for i in user_summary])
         num_new_gpus = [val for key, val in subdict['n_gpu'].items() if key not in OLD_GPU_TYPES]
+        for gm in sum_by_gmem:
+            total += f"|{gm}g={str(sum([val for key, val in subdict['n_gpu'].items() if key in GMEM and GMEM[key] == f'[{gm}g]'])):2s}"
         total += f"|newer={str(sum(num_new_gpus)):2s}"
         total += f"|bash={str(sum(subdict['bash_gpu'].values())):2s}"
         out += f"{user:12s}[{total}]    {summary_str}\n"
