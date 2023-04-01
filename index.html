@@ -108,7 +108,12 @@
 <br>
 
 <hr>
-<h2> Disk I/O (not accurate):</h2>
+<h2> GPU Leaderboard by Partition:</h2>
+<pre class='terminal' id="leaderboard_partition"> </pre>
+<br>
+
+<hr>
+<h2> Disk I/O (measured by reading a 512MB file):</h2>
 <div class='table_big' id='disk_io'> </div>
 <br>
 
@@ -190,6 +195,18 @@
         fetch("{{ url_for('leaderboard') }}")
         .then(response => {
                 response.text().then(t => {leaderboard.innerHTML = t;darkMode();})
+            });
+        }, interval);
+
+    var leaderboard_partition = document.getElementById("leaderboard_partition");
+    fetch("{{ url_for('leaderboard_partition') }}")
+        .then(response => {
+                response.text().then(t => {leaderboard_partition.innerHTML = t;darkMode();})
+            });
+    setInterval(() => {
+        fetch("{{ url_for('leaderboard_partition') }}")
+        .then(response => {
+                response.text().then(t => {leaderboard_partition.innerHTML = t;darkMode();})
             });
         }, interval);
 

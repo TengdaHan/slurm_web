@@ -377,6 +377,26 @@ def node_states(partition: Optional[str] = None) -> dict:
     return states
 
 
+@beartype
+def get_gpu_partitions(keywords=['gpu', 'ddp']) -> list:
+    """Query SLURM for the supported partitions.
+
+    Args:
+        keywords: the keywords to indicate gpu partitions (comma separated) of interest.
+
+    Returns:
+        a list of requested SLURM partitions.
+    """
+    cmd = "sinfo --noheader"
+    rows = parse_cmd(cmd)
+    partitions = set()
+    for row in rows:
+        par = row.split()[0]
+        if any([k in par for k in keywords]):
+            partitions.add(par)
+    return sorted(list(partitions))
+
+
 @functools.lru_cache(maxsize=64, typed=True)
 def occupancy_stats_for_node(node: str) -> dict:
     """Query SLURM for the occupancy of a given node.

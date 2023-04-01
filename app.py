@@ -7,20 +7,22 @@ from collections import defaultdict
 from subprocess import STDOUT, check_output
 from flask import Flask, Response, render_template_string
 from slurm_gpustat import resource_by_type, parse_all_gpus, gpu_usage, \
-    node_states, INACCESSIBLE, parse_cmd, avail_stats_for_node, parse_node_names
+    node_states, INACCESSIBLE, parse_cmd, avail_stats_for_node, parse_node_names, \
+    get_gpu_partitions
 
 
 # from https://developer.nvidia.com/cuda-gpus
 # sort gpu by computing power
 # if fail to display other GPU types, add items in the following dictionaries.
-CAPABILITY = {'a100': 8.0, 'a40': 8.6, 'a30': 8.0, 'a10': 8.6, 'a16': 8.6,
+CAPABILITY = {'a4500': 8.0, # not sure
+              'a100': 8.0, 'a40': 8.6, 'a30': 8.0, 'a10': 8.6, 'a16': 8.6,
               'v100': 7.0, 'gv100gl': 7.0, 'v100s': 7.0,
               'p40': 6.1, 'm40': 5.2,
               'rtx6k': 7.5, 'rtx8k': 7.5}
-GMEM = {'a6000': '[48g]', 'a40': '[48g]', 'a30': '[24g]',
+GMEM = {'a4500': '[20g]', 'a6000': '[48g]', 'a40': '[48g]', 'a30': '[24g]',
         'v100': '[16g]', 'gv100gl': '[32g]', 'v100s': '[32g]',
         'p40': '[24g]', 'm40': '[12/24g]',
-        'rtx6k': '[24g]', 'rtx8k': '[48g]'}
+        'rtx6k': '[24g]', 'rtx8k': '[48g]',}
 OLD_GPU_TYPES = ['p40', 'm40']
 
 
@@ -70,6 +72,41 @@ def parse_leaderboard(sum_by_gmem=[48]):
         total += f"|newer={str(sum(num_new_gpus)):2s}"
         total += f"|bash={str(sum(subdict['bash_gpu'].values())):2s}"
         out += f"{user:12s}[{total}]    {summary_str}\n"
+    return out
+
+
+def parse_leaderboard_by_partition(sum_by_gmem=[48]):
+    """Request sinfo, parse the leaderboard in string."""
+    resources = parse_all_gpus()
+    gpu_partitions = get_gpu_partitions()
+
+    out = "=" * 64 + "\n"
+    for i, part in enumerate(gpu_partitions):
+        usage = gpu_usage(resources=resources, partition=part) # partition='gpu'
+        aggregates = {}
+        for user, subdict in usage.items():
+            aggregates[user] = {}
+            aggregates[user]['n_gpu'] = {key: sum([x['n_gpu'] for x in val.values()])
+                                        for key, val in subdict.items()}
+            aggregates[user]['bash_gpu'] = {key: sum([x['bash_gpu'] for x in val.values()])
+                                            for key, val in subdict.items()}
+        if i != 0:
+            out += "-"*64 + "\n"
+        out += f"PARTITION: {part}\n"
+        for user, subdict in sorted(aggregates.items(),
+                                    key=lambda x: sum(x[1]['n_gpu'].values()), reverse=True):
+            total = f"total={str(sum(subdict['n_gpu'].values())):2s}"
+            user_summary = [f"{key}={val}" for key, val in sorted(subdict['n_gpu'].items(), 
+                                                                key=lambda x: CAPABILITY.get(x[0], 10.0), 
+                                                                reverse=True)]
+            summary_str = ''.join([f'{i:12s}' for i in user_summary])
+            num_new_gpus = [val for key, val in subdict['n_gpu'].items() if key not in OLD_GPU_TYPES]
+            for gm in sum_by_gmem:
+                total += f"|{gm}g={str(sum([val for key, val in subdict['n_gpu'].items() if key in GMEM and GMEM[key] == f'[{gm}g]'])):2s}"
+            total += f"|newer={str(sum(num_new_gpus)):2s}"
+            total += f"|bash={str(sum(subdict['bash_gpu'].values())):2s}"
+            out += f"{user:12s}[{total}]    {summary_str}\n"            
+    out += "=" * 64 + "\n"
     return out
 
 
@@ -324,6 +361,8 @@ def parse_disk_io():
     Pre-requisite: create a byte file by running 
     `dd if=/dev/zero of=/your/path/test.img bs=512MB count=1 oflag=dsync`."""
 
+    # return '<p>Under maintenance. </p>'
+
     try:
         beegfs_ultra_read = check_output(
             'dd if=/scratch/shared/beegfs/shared-datasets/test/test.img of=/dev/null bs=512MB count=1 oflag=dsync',
@@ -412,6 +451,14 @@ def main():
             yield out
         return Response(generate(), mimetype='text')
 
+    @app.route('/leaderboard_partition')
+    def leaderboard_partition():
+        def generate():
+            out = parse_leaderboard_by_partition()
+            yield out
+        return Response(generate(), mimetype='text')
+
+    # FIXME: temporarily disabled disk_io for server maintenance
     @app.route('/disk_io')
     def disk_io():
         def generate():
