@@ -103,23 +103,31 @@
 <br> -->
 
 <hr>
-<h2> GPU Leaderboard:</h2>
+<details>
+    <summary style="cursor: pointer;font-size:1.5em;font-weight: bold;margin-block-start: 0.83em;margin-block-end: 0.83em;"> GPU Leaderboard</summary>
 <pre class='terminal' id="leaderboard"> </pre>
+</details>
 <br>
 
 <hr>
-<h2> GPU Leaderboard by Partition:</h2>
+<details open>
+    <summary style="cursor: pointer;font-size:1.5em;font-weight: bold;margin-block-start: 0.83em;margin-block-end: 0.83em;"> GPU Leaderboard by Partition</summary>
 <pre class='terminal' id="leaderboard_partition"> </pre>
+</details>
 <br>
 
 <hr>
-<h2> Disk I/O (measured by reading a 512MB file):</h2>
-<div class='table_big' id='disk_io'> </div>
+<details open>
+    <summary style="cursor: pointer;font-size:1.5em;font-weight: bold;margin-block-start: 0.83em;margin-block-end: 0.83em;"> Disk I/O (measured by reading a 512MB file)</summary>
+    <div class='table_big' id='disk_io'> </div>
+</details>
 <br>
 
 <hr>
-<h2> Waiting Queue:</h2>
+<details open>
+    <summary style="cursor: pointer;font-size:1.5em;font-weight: bold;margin-block-start: 0.83em;margin-block-end: 0.83em;"> Waiting Queue</summary>
 <pre class='terminal' id="queue"> </pre>
+</details>
 
 <br><br><br>
 </body>
@@ -223,6 +231,11 @@
         background-color: #222;
         color: #e6e6e6;
     }
+
+    a {
+        color: #007bff;
+    }
+
     pre.terminal {
         color: #222;
         background-color: #fafafa;
